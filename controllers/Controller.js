@@ -32,61 +32,49 @@ export default class Controller {
 
     async handleMathOperations(op, x, y, n) {
         try {
+            if (isNaN(parseFloat(x)) || isNaN(parseFloat(y))) {
+                return this.invalidParams(['x', 'y']);
+            }
+    
             switch (op) {
                 case '+':
-                case ' ':
-                    if (x === undefined || y === undefined) {
-                        return this.invalidParams(['x', 'y']);
-                    }
                     return this.sendResult(parseFloat(x) + parseFloat(y));
-
+    
                 case '-':
-                    if (x === undefined || y === undefined) {
-                        return this.invalidParams(['x', 'y']);
-                    }
                     return this.sendResult(parseFloat(x) - parseFloat(y));
-
+    
                 case '*':
-                    if (x === undefined || y === undefined) {
-                        return this.invalidParams(['x', 'y']);
-                    }
                     return this.sendResult(parseFloat(x) * parseFloat(y));
-
+    
                 case '/':
-                    if (x === undefined || y === undefined) {
-                        return this.invalidParams(['x', 'y']);
-                    }
                     if (parseFloat(y) === 0) {
                         return this.HttpContext.response.status(400).json({
                             error: "Division by zero is not allowed"
                         });
                     }
                     return this.sendResult(parseFloat(x) / parseFloat(y));
-
+    
                 case '%':
-                    if (x === undefined || y === undefined) {
-                        return this.invalidParams(['x', 'y']);
-                    }
                     return this.sendResult(parseFloat(x) % parseFloat(y));
-
+    
                 case '!':
                     if (n === undefined) {
                         return this.invalidParams(['n']);
                     }
                     return this.sendResult(this.factorial(parseInt(n)));
-
+    
                 case 'p':
                     if (n === undefined) {
                         return this.invalidParams(['n']);
                     }
                     return this.sendResult(this.isPrime(parseInt(n)));
-
+    
                 case 'np':
                     if (n === undefined) {
                         return this.invalidParams(['n']);
                     }
                     return this.sendResult(this.nthPrime(parseInt(n)));
-
+    
                 default:
                     return this.HttpContext.response.status(422).json({
                         error: "Invalid operation"
@@ -98,6 +86,7 @@ export default class Controller {
             });
         }
     }
+    
 
     invalidParams(params) {
         return this.HttpContext.response.status(422).json({
