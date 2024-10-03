@@ -2,7 +2,7 @@ import Controller from './Controller.js';
 
 export default class MathsController extends Controller {
     constructor(HttpContext) {
-        this.HttpContext = HttpContext;
+        super(HttpContext);
     }
     async get() {
         const { op, x, y, n } = this.HttpContext.query;
