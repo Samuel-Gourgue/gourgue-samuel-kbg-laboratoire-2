@@ -1,5 +1,5 @@
 class Maths_API {
-    static API_URL() { return "http://localhost:5000/api/maths"; }
+    static API_URL() { return "https://carnation-truthful-pangolin.glitch.me/api/maths"; }
 
     static async Get(op, params) {
         let urlParams = new URLSearchParams({ op, ...params }).toString();
