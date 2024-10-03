@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test du service /api/maths</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>Test du service /api/maths</h1>
+    
+    <div>
+        <label for="service-url">Url du service</label>
+        <input type="text" id="service-url" value="https://votre-serveur.glitch.me/api/math" size="50">
+        <button id="start-test">Démarrer le test</button>
+        <button id="help-btn">Aide</button>
+    </div>
+
+    <div id="test-results">
+        <h3>Tests</h3>
+        <pre id="results"></pre>
+    </div>
+
+    <div id="verdict">
+        <h3>Verdict</h3>
+        <p id="verdict-text"></p>
+    </div>
+
+    <script src="js/tests.js"></script>
+</body>
+</html>
