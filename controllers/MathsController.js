@@ -4,28 +4,29 @@ export default class MathsController extends Controller {
     constructor(HttpContext) {
         super(HttpContext);
     }
+    
     async get() {
         const { op, x, y, n } = this.HttpContext.query;
 
+        const operation = op.trim() === '' ? '+' : op;
+
         try {
-            const result = await this.handleMathOperations(op, x, y, n);
+            const result = await this.handleMathOperations(operation, x, y, n);
             if (result !== undefined) {
                 return this.HttpContext.response.json({
                     n,
-                    op,
+                    op: operation,
                     value: result,
                 });
             }
         } catch (error) {
-            return this.HttpContext.response.badRequest(error.message);
+            return this.HttpContext.response.status(400).json({
+                error: error.message,
+            });
         }
     }
 
     async handleMathOperations(op, x, y, n) {
-        if (op.trim() === '') {
-            op = '+';
-        }
-
         const errors = this.validateParameters(op, x, y, n);
         if (errors.length > 0) {
             return this.HttpContext.response.status(422).json({ errors });
@@ -73,18 +74,27 @@ export default class MathsController extends Controller {
 
     validateParameters(op, x, y, n) {
         const errors = [];
-        if (!['+', '-', '*', '/', '%', '!', 'p', 'np'].includes(op)) {
+        const allowedOps = ['+', '-', '*', '/', '%', '!', 'p', 'np'];
+
+        if (!allowedOps.includes(op)) {
             errors.push({ op: `Operation '${op}' is not valid.` });
         }
+
         if (x !== undefined && isNaN(x)) {
             errors.push({ x: `'x' parameter is not a number` });
         }
         if (y !== undefined && isNaN(y)) {
             errors.push({ y: `'y' parameter is not a number` });
         }
+
         if (['!', 'p', 'np'].includes(op) && (n === undefined || isNaN(n))) {
             errors.push({ n: `'n' parameter is not a number` });
         }
+
+        if (['+', '-', '*', '/', '%'].includes(op) && (x === undefined || y === undefined)) {
+            errors.push({ parameters: `Missing parameters x or y for operation '${op}'` });
+        }
+
         return errors;
     }
 
