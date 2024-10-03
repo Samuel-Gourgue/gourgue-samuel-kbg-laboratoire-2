@@ -1,31 +1,32 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test du service /api/maths</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Test du service /api/maths</h1>
-    
-    <div>
-        <label for="service-url">Url du service</label>
-        <input type="text" id="service-url" value="https://votre-serveur.glitch.me/api/math" size="50">
-        <button id="start-test">Démarrer le test</button>
-        <button id="help-btn">Aide</button>
-    </div>
+
+    <form id="test-form">
+        <label for="api-url">Url du service</label>
+        <input type="text" id="api-url" value="https://carnation-truthful-pangolin.glitch.me/api/maths" readonly>
+        <button type="button" id="start-test-btn">Démarrer le test</button>
+        <button type="button" id="help-btn">Aide</button>
+    </form>
 
     <div id="test-results">
-        <h3>Tests</h3>
-        <pre id="results"></pre>
+        <h2>Tests</h2>
+        <ul id="results-list"></ul>
     </div>
 
     <div id="verdict">
-        <h3>Verdict</h3>
+        <h2>Verdict</h2>
         <p id="verdict-text"></p>
     </div>
 
+    <script src="js/Maths_API.js"></script>
     <script src="js/tests.js"></script>
 </body>
 </html>
