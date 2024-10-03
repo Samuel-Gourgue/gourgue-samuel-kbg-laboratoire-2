@@ -65,9 +65,11 @@ export default class MathsController extends Controller {
 
             return this.sendResult(result);
         } catch (error) {
-            return this.HttpContext.response.status(400).json({
-                error: error.message
-            });
+            if (!this.HttpContext.response.headersSent) {
+                return this.HttpContext.response.status(500).json({
+                    error: "An unexpected error occurred."
+                });
+            }
         }
     }
 
