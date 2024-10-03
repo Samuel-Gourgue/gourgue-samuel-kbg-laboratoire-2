@@ -8,6 +8,7 @@ export default class Math extends Model {
         this.addField('x', 'number');
         this.addField('y', 'number');
         this.addField('n', 'number');
+        this.addField('value', 'number');
 
         this.setKey('op');
     }
