@@ -12,9 +12,9 @@ export default class MathsController extends Controller {
         const { op, x, y, n } = params;
 
         if (op) {
-            await this.handleMathOperations(op, x, y, n);
+            return await this.handleMathOperations(op, x, y, n);
         } else {
-            super.get(this.HttpContext.path.id);
+            return super.get(this.HttpContext.path.id);
         }
     }
 
@@ -24,11 +24,9 @@ export default class MathsController extends Controller {
                 op = '+';
             }
 
-            if (!['+', '-', '*', '/', '!', 'p', 'np'].includes(op) || isNaN(x) || isNaN(y)) {
+            if (!['+', '-', '*', '/', '!', 'p', 'np'].includes(op) || isNaN(x) || (['!', 'p', 'np'].includes(op) && isNaN(n))) {
                 return this.HttpContext.response.status(400).json({
-                    n: y,
-                    op: op,
-                    value: false
+                    error: `Invalid operation or parameters. op: ${op}, x: ${x}, y: ${y}, n: ${n}`
                 });
             }
 
@@ -52,21 +50,12 @@ export default class MathsController extends Controller {
                     result = parseFloat(x) / parseFloat(y);
                     break;
                 case '!':
-                    if (n === undefined) {
-                        return this.invalidParams(['n']);
-                    }
                     result = this.factorial(parseInt(n));
                     break;
                 case 'p':
-                    if (n === undefined) {
-                        return this.invalidParams(['n']);
-                    }
                     result = this.isPrime(parseInt(n));
                     break;
                 case 'np':
-                    if (n === undefined) {
-                        return this.invalidParams(['n']);
-                    }
                     result = this.nthPrime(parseInt(n));
                     break;
                 default:
@@ -77,25 +66,15 @@ export default class MathsController extends Controller {
 
             return this.sendResult(result);
         } catch (error) {
-            if (!this.HttpContext.response.headersSent) {
-                return this.HttpContext.response.status(400).json({
-                    error: error.message
-                });
-            }
-        }
-    }
-
-    invalidParams(params) {
-        if (!this.HttpContext.response.headersSent) {
-            return this.HttpContext.response.status(422).json({
-                error: `Missing or invalid parameters: ${params.join(', ')}`
+            return this.HttpContext.response.status(400).json({
+                error: error.message
             });
         }
     }
 
     sendResult(value) {
-        if (!this.HttpContext.response.headersSent) {
-            this.HttpContext.response.status(200).json({
+        if (!this.HttpContext.response.headersSent) { 
+            return this.HttpContext.response.status(200).json({
                 value
             });
         }
@@ -123,3 +102,4 @@ export default class MathsController extends Controller {
         return num;
     }
 }
+
