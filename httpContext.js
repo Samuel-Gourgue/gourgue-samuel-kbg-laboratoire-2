@@ -7,7 +7,7 @@
 // Author : Nicolas Chourot
 // Lionel-Groulx College
 /////////////////////////////////////////////////////////////////////
-import queryString from "query-string";
+import queryStringLib from "query-string"; // Renommer pour éviter le conflit
 import Response from "./response.js";
 import * as utilities from "./utilities.js";
 
@@ -46,7 +46,7 @@ export default class HttpContext {
                         }
                     } else if (this.req.headers["content-type"] === "application/x-www-form-urlencoded") {
                         try {
-                            this.payload = queryString.parse(body.toString());
+                            this.payload = queryStringLib.parse(body.toString());
                         } catch (error) {
                             console.log(error);
                         }
@@ -55,7 +55,7 @@ export default class HttpContext {
 
                 if (!this.payload) {
                     try {
-                        this.payload = queryString.parse(utilities.getQueryString(this.req.url));
+                        this.payload = queryStringLib.parse(utilities.getQueryString(this.req.url));
                     } catch (error) {
                         console.log(error);
                     }
@@ -79,3 +79,4 @@ export default class HttpContext {
         return httpContext;
     }
 }
+

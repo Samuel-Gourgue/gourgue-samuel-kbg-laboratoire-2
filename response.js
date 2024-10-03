@@ -1,14 +1,8 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// This module define the http Response class
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Author : Nicolas Chourot
-// Lionel-Groulx College
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 export default class Response {
     constructor(res) {
         this.res = res;
     }
+
     status(number, errorMessage = '') {
         if (errorMessage) {
             this.res.writeHead(number, { 'content-type': 'application/json' });
@@ -19,6 +13,7 @@ export default class Response {
             return this.end();
         }
     }
+
     end(content = null) {
         if (content)
             this.res.end(content);
@@ -27,21 +22,20 @@ export default class Response {
         return true;
     }
 
-  /////////////////////////////////////////////// 200 ///////////////////////////////////////////////////////
-
-    ok() { return this.status(200); }       // ok status
-    JSON(obj) {                         // ok status with content
+    // Méthode ajoutée pour renvoyer une réponse JSON
+    json(obj) {
         this.res.writeHead(200, { 'content-type': 'application/json' });
-        if (obj) {
-            let json = JSON.stringify(obj);
-            return this.end(json);
-        } else
-            return this.end();
+        return this.end(JSON.stringify(obj));
     }
+
+    /////////////////////////////////////////////// 200 ///////////////////////////////////////////////////////
+    ok() { return this.status(200); }       // ok status
+
     HTML(content) {
         this.res.writeHead(200, { 'content-type': 'text/html' });
         return this.end(content);
     }
+    
     accepted() { return this.status(202); } // accepted status
     deleted() { return this.status(202); }  // accepted status
     created(obj) {                      // created status
@@ -56,7 +50,6 @@ export default class Response {
     updated() { return this.status(204); }         // no content status
 
     /////////////////////////////////////////////// 400 ///////////////////////////////////////////////////////
-
     badRequest(errormessage = '') { return this.status(400, errormessage); }      // bad request status
     unAuthorized(errormessage = '') { return this.status(401, errormessage); }    // unAuthorized status
     forbidden(errormessage = '') { return this.status(403, errormessage); }       // forbidden status
@@ -67,12 +60,10 @@ export default class Response {
     unprocessable(errormessage = '') { return this.status(422, errormessage); }   // Unprocessable Entity status
 
     // Custom status
-
     userNotFound(errormessage = '') { return this.status(481, errormessage); }    // custom bad request status
     wrongPassword(errormessage = '') { return this.status(482, errormessage); }   // custom bad request status
 
     /////////////////////////////////////////////// 500 ///////////////////////////////////////////////////////
-
     internalError(errormessage = '') { return this.status(500, errormessage); }   // internal error status
     notImplemented(errormessage = '') { return this.status(501, errormessage); }  // Not implemented
 }
