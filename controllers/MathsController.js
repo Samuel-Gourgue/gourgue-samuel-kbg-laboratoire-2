@@ -1,75 +1,81 @@
 import Controller from './Controller.js';
 
 export default class MathsController extends Controller {
-    async get() {
-        const params = this.HttpContext.path.params || {};
-        const { op, x, y, n } = params;
+    constructor(HttpContext) {
+        super(HttpContext);
+        this.HttpContext = HttpContext;
+    }
 
-        if (op) {
-            await this.handleMathOperations(op, x, y, n);
-        } else {
-            await super.get(this.HttpContext.path.id);
+    async get() {
+        const { op, x, y, n } = this.HttpContext.query;
+
+        try {
+            const result = await this.handleMathOperations(op, x, y, n);
+            if (result !== undefined) {
+                return this.HttpContext.response.json({
+                    n,
+                    op,
+                    value: result,
+                });
+            }
+        } catch (error) {
+            return this.HttpContext.response.badRequest(error.message);
         }
     }
 
     async handleMathOperations(op, x, y, n) {
-        try {
-            if (op.trim() === '') {
-                op = '+';
-            }
-
-            const errors = this.validateParameters(op, x, y, n);
-            if (errors.length > 0) {
-                return this.HttpContext.response.status(422).json({ errors });
-            }
-
-            let result;
-            switch (op) {
-                case '+':
-                    result = parseFloat(x) + parseFloat(y);
-                    break;
-                case '-':
-                    result = parseFloat(x) - parseFloat(y);
-                    break;
-                case '*':
-                    result = parseFloat(x) * parseFloat(y);
-                    break;
-                case '/':
-                    if (parseFloat(y) === 0) {
-                        return this.HttpContext.response.status(400).json({
-                            error: "Division by zero is not allowed."
-                        });
-                    }
-                    result = parseFloat(x) / parseFloat(y);
-                    break;
-                case '!':
-                    result = this.factorial(parseInt(n));
-                    break;
-                case 'p':
-                    result = this.isPrime(parseInt(n));
-                    break;
-                case 'np':
-                    result = this.nthPrime(parseInt(n));
-                    break;
-                default:
-                    return this.HttpContext.response.status(422).json({
-                        error: "Invalid operation"
-                    });
-            }
-
-            return this.sendResult(result);
-        } catch (error) {
-            if (!this.HttpContext.response.headersSent) {
-                return this.HttpContext.response.status(500).json({
-                    error: "An unexpected error occurred."
-                });
-            }
+        if (op.trim() === '') {
+            op = '+';
         }
+
+        const errors = this.validateParameters(op, x, y, n);
+        if (errors.length > 0) {
+            return this.HttpContext.response.status(422).json({ errors });
+        }
+
+        let result;
+        switch (op) {
+            case '+':
+                result = parseFloat(x) + parseFloat(y);
+                break;
+            case '-':
+                result = parseFloat(x) - parseFloat(y);
+                break;
+            case '*':
+                result = parseFloat(x) * parseFloat(y);
+                break;
+            case '/':
+                if (parseFloat(y) === 0) {
+                    return this.HttpContext.response.status(400).json({
+                        error: "Division by zero is not allowed."
+                    });
+                }
+                result = parseFloat(x) / parseFloat(y);
+                break;
+            case '%':
+                result = parseFloat(x) % parseFloat(y);
+                break;
+            case '!':
+                result = this.factorial(parseInt(n));
+                break;
+            case 'p':
+                result = this.isPrime(parseInt(n));
+                break;
+            case 'np':
+                result = this.nthPrime(parseInt(n));
+                break;
+            default:
+                return this.HttpContext.response.status(422).json({
+                    error: "Invalid operation"
+                });
+        }
+
+        return result;
     }
 
     validateParameters(op, x, y, n) {
         const errors = [];
-        if (!['+', '-', '*', '/', '!', 'p', 'np'].includes(op)) {
+        if (!['+', '-', '*', '/', '%', '!', 'p', 'np'].includes(op)) {
             errors.push({ op: `Operation '${op}' is not valid.` });
         }
         if (x !== undefined && isNaN(x)) {
@@ -84,15 +90,13 @@ export default class MathsController extends Controller {
         return errors;
     }
 
-    sendResult(value) {
-        if (!this.HttpContext.response.headersSent) {
-            return this.HttpContext.response.status(200).json({ value });
-        }
-    }
-
     factorial(n) {
-        if (n < 0) throw new Error("Negative number not allowed for factorial");
-        return n <= 1 ? 1 : n * this.factorial(n - 1);
+        if (n < 0) return false;
+        let result = 1;
+        for (let i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
     }
 
     isPrime(n) {
