@@ -6,10 +6,11 @@ export default class MathsController extends Controller {
     }
     
     async get() {
-        const { op, x, y, n } = this.HttpContext.query;
-
-        const operation = op.trim() === '' ? '+' : op;
-
+        const query = this.HttpContext.query || {};
+        const { op, x, y, n } = query;
+    
+        const operation = op && op.trim() !== '' ? op : '+';
+    
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
             if (result !== undefined) {

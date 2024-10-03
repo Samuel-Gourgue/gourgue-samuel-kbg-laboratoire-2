@@ -20,46 +20,59 @@ export default class HttpContext {
         this.path = utilities.decomposePath(req.url);
         this.response = new Response(res);
         this.payload = null;
-        this.secure = req.headers['x-forwarded-proto'] != undefined;
+        this.query = {};
+        this.secure = req.headers['x-forwarded-proto'] !== undefined;
         this.host = (this.secure ? "https://" : "http://") + req.headers["host"];
-        this.hostIp = req.headers['x-forwarded-for'] != undefined ? req.headers['x-forwarded-for'] : "127.0.0.1";
+        this.hostIp = req.headers['x-forwarded-for'] !== undefined ? req.headers['x-forwarded-for'] : "127.0.0.1";
     }
+
     static get() { 
         return httpContext; 
     }
+
     async getJSONPayload() {
         return await new Promise(resolve => {
-            let body = [];
+            let body = '';
             this.req.on('data', chunk => {
-                body += chunk; // body.push(chunk) was a mistake and do not work with big data
+                body += chunk;
             }).on('end', () => {
                 if (body.length > 0) {
-                    if (this.req.headers['content-type'] == "application/json") {
+                    if (this.req.headers['content-type'] === "application/json") {
                         try {
                             this.payload = JSON.parse(body);
-                        }
-                        catch (error) {
+                        } catch (error) {
                             console.log(error);
                             this.payload = null;
                         }
-                    } else {
-                        if (this.req.headers["content-type"] === "application/x-www-form-urlencoded") {
-                            try { this.payload = queryString.parse(body.toString()); }
-                            catch (error) { console.log(error); }
+                    } else if (this.req.headers["content-type"] === "application/x-www-form-urlencoded") {
+                        try {
+                            this.payload = queryString.parse(body.toString());
+                        } catch (error) {
+                            console.log(error);
                         }
                     }
-                } else {
-                    try { this.payload = queryString.parse(utilities.getQueryString(this.req.url)); }
-                    catch (error) { console.log(error); }
                 }
-                if (this.payload) {
-                    if (Object.keys(this.payload).length == 0)
-                        this.payload = null;
+
+                if (!this.payload) {
+                    try {
+                        this.payload = queryString.parse(utilities.getQueryString(this.req.url));
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
+
+                if (this.payload && Object.keys(this.payload).length === 0) {
+                    this.payload = null;
+                }
+
+                const queryString = utilities.getQueryString(this.req.url);
+                this.query = queryString ? queryString : {};
+
                 resolve(this.payload);
             });
-        })
+        });
     }
+
     static async create(req, res) {
         httpContext = new HttpContext(req, res);
         await httpContext.getJSONPayload();
