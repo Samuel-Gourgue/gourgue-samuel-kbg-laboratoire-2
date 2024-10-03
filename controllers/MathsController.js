@@ -12,22 +12,21 @@ export default class MathsController extends Controller {
         const { op, x, y, n } = params;
 
         if (op) {
-            return await this.handleMathOperations(op, x, y, n);
+            await this.handleMathOperations(op, x, y, n);
         } else {
-            return super.get(this.HttpContext.path.id);
+            await super.get(this.HttpContext.path.id);
         }
     }
 
     async handleMathOperations(op, x, y, n) {
         try {
-            if (op === ' ') {
+            if (op.trim() === '') {
                 op = '+';
             }
 
-            if (!['+', '-', '*', '/', '!', 'p', 'np'].includes(op) || isNaN(x) || (['!', 'p', 'np'].includes(op) && isNaN(n))) {
-                return this.HttpContext.response.status(400).json({
-                    error: `Invalid operation or parameters. op: ${op}, x: ${x}, y: ${y}, n: ${n}`
-                });
+            const errors = this.validateParameters(op, x, y, n);
+            if (errors.length > 0) {
+                return this.HttpContext.response.status(422).json({ errors });
             }
 
             let result;
@@ -72,11 +71,26 @@ export default class MathsController extends Controller {
         }
     }
 
+    validateParameters(op, x, y, n) {
+        const errors = [];
+        if (!['+', '-', '*', '/', '!', 'p', 'np'].includes(op)) {
+            errors.push({ op: `Operation '${op}' is not valid.` });
+        }
+        if (x !== undefined && isNaN(x)) {
+            errors.push({ x: `'x' parameter is not a number` });
+        }
+        if (y !== undefined && isNaN(y)) {
+            errors.push({ y: `'y' parameter is not a number` });
+        }
+        if (['!', 'p', 'np'].includes(op) && (n === undefined || isNaN(n))) {
+            errors.push({ n: `'n' parameter is not a number` });
+        }
+        return errors;
+    }
+
     sendResult(value) {
-        if (!this.HttpContext.response.headersSent) { 
-            return this.HttpContext.response.status(200).json({
-                value
-            });
+        if (!this.HttpContext.response.headersSent) {
+            return this.HttpContext.response.status(200).json({ value });
         }
     }
 
@@ -102,4 +116,3 @@ export default class MathsController extends Controller {
         return num;
     }
 }
-
