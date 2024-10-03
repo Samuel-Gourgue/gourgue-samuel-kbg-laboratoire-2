@@ -32,6 +32,11 @@ export default class Controller {
 
     async handleMathOperations(op, x, y, n) {
         try {
+
+            if (op === ' ') {
+                op = '+';
+            }
+            
             if (isNaN(parseFloat(x)) || isNaN(parseFloat(y))) {
                 return this.invalidParams(['x', 'y']);
             }
