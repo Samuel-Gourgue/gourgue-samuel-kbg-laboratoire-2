@@ -3,8 +3,10 @@ export default class Controller {
         this.HttpContext = HttpContext;
         this.repository = repository;
     }
+
     async get() {
-        const { op, x, y, n } = this.HttpContext.path.params;
+        const params = this.HttpContext.path.params || {};
+        const { op, x, y, n } = params;
 
         if (op) {
             return this.handleMathOperations(op, x, y, n);
@@ -130,6 +132,7 @@ export default class Controller {
         }
         return num;
     }
+
     post(data) {
         data = this.repository.add(data);
         if (this.repository.model.state.isValid) {
@@ -141,6 +144,7 @@ export default class Controller {
                 this.HttpContext.response.badRequest(this.repository.model.state.errors);
         }
     }
+
     put(data) {
         if (!isNaN(this.HttpContext.path.id)) {
             this.repository.update(this.HttpContext.path.id, data);
@@ -151,21 +155,22 @@ export default class Controller {
                     this.HttpContext.response.notFound(this.repository.model.state.errors);
                 } else {
                     if (this.repository.model.state.inConflict)
-                        this.HttpContext.response.conflict(this.repository.model.state.errors)
+                        this.HttpContext.response.conflict(this.repository.model.state.errors);
                     else
                         this.HttpContext.response.badRequest(this.repository.model.state.errors);
                 }
             }
         } else
-            this.HttpContext.response.badRequest("The Id of ressource is not specified in the request url.")
+            this.HttpContext.response.badRequest("The Id of the resource is not specified in the request URL.");
     }
+
     remove(id) {
         if (!isNaN(this.HttpContext.path.id)) {
             if (this.repository.remove(id))
                 this.HttpContext.response.accepted();
             else
-                this.HttpContext.response.notFound("Ressource not found.");
+                this.HttpContext.response.notFound("Resource not found.");
         } else
-            this.HttpContext.response.badRequest("The Id in the request url is rather not specified or syntactically wrong.");
+            this.HttpContext.response.badRequest("The Id in the request URL is not specified or syntactically incorrect.");
     }
 }
