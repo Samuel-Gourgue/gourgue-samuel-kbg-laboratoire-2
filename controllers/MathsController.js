@@ -12,19 +12,18 @@ export default class MathsController extends Controller {
         const { op, x, y, n } = params;
 
         if (op) {
-            return await this.handleMathOperations(op, x, y, n);
+            await this.handleMathOperations(op, x, y, n);
         } else {
-            return super.get(this.HttpContext.path.id);
+            super.get(this.HttpContext.path.id);
         }
     }
 
     async handleMathOperations(op, x, y, n) {
         try {
             if (op === ' ') {
-                op = '+'; // Treat space as addition
+                op = '+';
             }
 
-            // Validate operation and parameters
             if (!['+', '-', '*', '/', '!', 'p', 'np'].includes(op) || isNaN(x) || isNaN(y)) {
                 return this.HttpContext.response.status(400).json({
                     n: y,
@@ -76,25 +75,30 @@ export default class MathsController extends Controller {
                     });
             }
 
-            // Send the result back
             return this.sendResult(result);
         } catch (error) {
-            return this.HttpContext.response.status(400).json({
-                error: error.message
-            });
+            if (!this.HttpContext.response.headersSent) {
+                return this.HttpContext.response.status(400).json({
+                    error: error.message
+                });
+            }
         }
     }
 
     invalidParams(params) {
-        return this.HttpContext.response.status(422).json({
-            error: `Missing or invalid parameters: ${params.join(', ')}`
-        });
+        if (!this.HttpContext.response.headersSent) {
+            return this.HttpContext.response.status(422).json({
+                error: `Missing or invalid parameters: ${params.join(', ')}`
+            });
+        }
     }
 
     sendResult(value) {
-        this.HttpContext.response.status(200).json({
-            value
-        });
+        if (!this.HttpContext.response.headersSent) {
+            this.HttpContext.response.status(200).json({
+                value
+            });
+        }
     }
 
     factorial(n) {
