@@ -4,13 +4,10 @@ function allowAllAnonymousAccess(res) {
     res.setHeader('Access-Control-Allow-Headers', '*');
     res.setHeader('Access-Control-Expose-Headers', '*');
 }
-
 function accessControlConfig(httpContext) {
-    if (httpContext.req.headers['sec-fetch-mode'] == 'cors') {
+    if (httpContext.req.headers['sec-fetch-mode'] == 'cors')
         allowAllAnonymousAccess(httpContext.res);
-    }
 }
-
 export function handleCORSPreflight(httpContext) {
     accessControlConfig(httpContext);
     if (httpContext.req.method === 'OPTIONS') {
@@ -20,5 +17,3 @@ export function handleCORSPreflight(httpContext) {
     }
     return false;
 }
-
-export { allowAllAnonymousAccess };
