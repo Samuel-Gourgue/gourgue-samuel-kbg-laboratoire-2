@@ -13,17 +13,13 @@ export default class MathsController extends Controller {
 
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
-            if (result !== undefined) {
-                this.HttpContext.response.JSON({
-                    op: operation,
-                    x: x !== undefined ? x : null,
-                    y: y !== undefined ? y : null,
-                    n: n !== undefined ? n : null,
-                    value: result,
-                });
-            } else {
-                this.HttpContext.response.unprocessable('Invalid operation or parameters.');
-            }
+            this.HttpContext.response.JSON({
+                op: operation,
+                x: x !== undefined ? x : null,
+                y: y !== undefined ? y : null,
+                n: n !== undefined ? n : null,
+                value: result,
+            });
         } catch (error) {
             this.HttpContext.response.unprocessable(error.message);
         }
@@ -49,14 +45,17 @@ export default class MathsController extends Controller {
     }
 
     async handleMathOperations(op, x, y, n) {
-        if (x !== undefined) {
-            x = parseFloat(x);
-            if (isNaN(x)) throw new Error("'x' parameter is not a number");
+        if (['+', '-', '*', '/'].includes(op)) {
+            if (x !== undefined) {
+                x = parseFloat(x);
+                if (isNaN(x)) throw new Error("'x' parameter is not a number");
+            }
+            if (y !== undefined) {
+                y = parseFloat(y);
+                if (isNaN(y)) throw new Error("'y' parameter is not a number");
+            }
         }
-        if (y !== undefined) {
-            y = parseFloat(y);
-            if (isNaN(y)) throw new Error("'y' parameter is not a number");
-        }
+
         if (n !== undefined) {
             n = parseInt(n);
             if (isNaN(n)) throw new Error("'n' parameter is not an integer");
