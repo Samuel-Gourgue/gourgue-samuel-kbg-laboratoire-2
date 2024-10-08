@@ -10,17 +10,20 @@ export default class MathsController extends Controller {
         let y = param['y'] || param['Y'];
         let n = param['n'] || param['N'];
 
-        let missingParams = this.checkMissingParams(operation, param);
+        let missingParams = this.checkMissingParams(operation, x, y, n);
         if (missingParams.length > 0) {
             const errorResponse = {
                 op: operation,
+                x: param['x'] || param['X'],
+                y: param['y'] || param['Y'],
+                n: param['n'] || param['N'],
                 error: `${missingParams.join(', ')} parameter is missing`
             };
             return this.HttpContext.response.JSON(errorResponse);
         }
 
         try {
-            const result = await this.handleMathOperations(operation, x, y, n);
+            const result = await this.handleMathOperations(operation, param['x'], param['y'], param['n']);
             const response = { op: operation, value: result };
             if (param['x'] !== undefined) response.x = param['x'];
             if (param['y'] !== undefined) response.y = param['y'];
@@ -37,33 +40,25 @@ export default class MathsController extends Controller {
         }
     }
 
-    checkMissingParams(op, params) {
+    checkMissingParams(op, x, y, n) {
         let missing = [];
-        let extra = [];
-
-        const expectedParams = ['op'];
-        if (['+', '-', '*', '/', '%'].includes(op)) {
-            expectedParams.push('x', 'y');
-        } else if (['np', 'p', '!'].includes(op)) {
-            expectedParams.push('n');
+        switch (op) {
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+            case '%':
+                if (x === undefined || x === null || x === '') missing.push("'x'");
+                if (y === undefined || y === null || y === '') missing.push("'y'");
+                break;
+            case 'np':
+            case 'p':
+            case '!':
+                if (n === undefined || n === null || n === '') missing.push("'n'");
+                break;
+            default:
+                missing.push("'op'");
         }
-
-        expectedParams.forEach(param => {
-            if (params[param] === undefined || params[param] === null || params[param] === '') {
-                missing.push(`'${param}'`);
-            }
-        });
-
-        Object.keys(params).forEach(param => {
-            if (!expectedParams.includes(param) && param !== 'op') {
-                extra.push(`'${param}'`);
-            }
-        });
-
-        if (extra.length > 0) {
-            return [`Too many parameters: ${extra.join(', ')}`];
-        }
-
         return missing;
     }
 
@@ -75,7 +70,7 @@ export default class MathsController extends Controller {
             } else {
                 throw new Error("'x' parameter is missing");
             }
-
+    
             if (y !== undefined || y == "") {
                 y = parseFloat(y);
                 if (isNaN(y)) throw new Error("'y' parameter is not a number");
@@ -83,7 +78,7 @@ export default class MathsController extends Controller {
                 throw new Error("'y' parameter is missing");
             }
         }
-
+    
         if (n !== undefined) {
             n = parseFloat(n);
             if (isNaN(n)) throw new Error("'n' parameter is not a number");
