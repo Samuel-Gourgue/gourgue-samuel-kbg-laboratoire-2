@@ -27,22 +27,22 @@ document.getElementById('start-test-btn').addEventListener('click', async functi
             continue;
         }
 
+        const response = { op: test.op };
+
+        if (test.x !== undefined) response.x = test.x;
+        if (test.y !== undefined) response.y = test.y;
+        if (test.n !== undefined) response.n = test.n;
+
         if (result && result.error) {
-            resultList.innerHTML += `<li>Erreur: ${JSON.stringify(test)} - ${result.error}</li>`;
-            allPassed = false;
-        } else {
-            const response = { op: test.op };
-            if (test.x !== undefined && test.x !== null) response.x = test.x;
-            if (test.y !== undefined && test.y !== null) response.y = test.y;
-            if (test.n !== undefined && test.n !== null) response.n = test.n;
-
-            if (result.value !== undefined) {
-                response.value = result.value;
-            } else if (result.error) {
-                response.error = result.error;
-            }
-
+            response.error = result.error;
             resultList.innerHTML += `<li>OK ---> ${JSON.stringify(response)}</li>`;
+            allPassed = false;
+        } else if (result && result.value !== undefined) {
+            response.value = result.value;
+            resultList.innerHTML += `<li>OK ---> ${JSON.stringify(response)}</li>`;
+        } else {
+            resultList.innerHTML += `<li>Erreur: ${JSON.stringify(test)} - Unknown error occurred</li>`;
+            allPassed = false;
         }
     }
 
