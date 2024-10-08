@@ -13,24 +13,27 @@ export default class MathsController extends Controller {
 
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
-
+            if (result.error) {
+                const errorResponse = { op: operation, X: x, Y: y, error: result.error };
+                return this.HttpContext.response.JSON(errorResponse);
+            }
+            
             const response = { op: operation, value: result };
-            if (x !== undefined) response.x = x;
-            if (y !== undefined) response.y = y;
+            if (x !== undefined) response.X = x; 
+            if (y !== undefined) response.Y = y; 
             if (n !== undefined) response.n = n;
-
+        
             this.HttpContext.response.JSON(response);
         } catch (error) {
             const errorResponse = {
                 op: operation,
+                X: x,
+                Y: y,
+                n: n,
                 error: error.message,
             };
-            if (x !== undefined) errorResponse.x = x;
-            if (y !== undefined) errorResponse.y = y;
-            if (n !== undefined) errorResponse.n = n;
-
             this.HttpContext.response.JSON(errorResponse);
-        }
+        }        
     }
 
     checkMissingParams(op, x, y, n) {
