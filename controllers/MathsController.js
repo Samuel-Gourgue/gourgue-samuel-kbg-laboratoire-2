@@ -4,24 +4,33 @@ export default class MathsController extends Controller {
     async get() {
         let param = this.HttpContext.path.params;
 
+        let x = param['x'] !== undefined ? param['x'] : param['X'];
+        let y = param['y'] !== undefined ? param['y'] : param['Y'];
+        let n = param['n'] !== undefined ? param['n'] : param['N'];
+
         let operation = param['op'] && param['op'].trim() !== '' ? param['op'] : '+';
 
-        let missingParams = this.checkMissingParams(operation, param['x'], param['y'], param['n']);
+        let missingParams = this.checkMissingParams(operation, x, y, n);
         if (missingParams.length > 0) {
             return this.HttpContext.response.badRequest(`Missing required parameters: ${missingParams.join(', ')}`);
         }
 
         try {
-            const result = await this.handleMathOperations(operation, param['x'], param['y'], param['n']);
+            const result = await this.handleMathOperations(operation, x, y, n);
+
             const response = { op: operation, value: result };
+            if (param['X'] !== undefined) response.X = param['X'];
             if (param['x'] !== undefined) response.x = param['x'];
+            if (param['Y'] !== undefined) response.Y = param['Y'];
             if (param['y'] !== undefined) response.y = param['y'];
             if (param['n'] !== undefined) response.n = param['n'];
 
             this.HttpContext.response.JSON(response);
         } catch (error) {
             const errorResponse = { op: operation, error: error.message };
+            if (param['X'] !== undefined) errorResponse.X = param['X'];
             if (param['x'] !== undefined) errorResponse.x = param['x'];
+            if (param['Y'] !== undefined) errorResponse.Y = param['Y'];
             if (param['y'] !== undefined) errorResponse.y = param['y'];
             if (param['n'] !== undefined) errorResponse.n = param['n'];
 
@@ -53,14 +62,14 @@ export default class MathsController extends Controller {
 
     async handleMathOperations(op, x, y, n) {
         if (['+', '-', '*', '/', '%'].includes(op)) {
-            if (x !== undefined || x == '') {
+            if (x !== undefined && x !== '') {
                 x = parseFloat(x);
                 if (isNaN(x)) throw new Error("'x' parameter is not a number");
             } else {
                 throw new Error("'x' parameter is missing");
             }
     
-            if (y !== undefined || y == '') {
+            if (y !== undefined && y !== '') {
                 y = parseFloat(y);
                 if (isNaN(y)) throw new Error("'y' parameter is not a number");
             } else {
