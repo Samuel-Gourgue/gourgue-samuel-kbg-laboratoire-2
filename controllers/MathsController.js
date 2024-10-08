@@ -21,7 +21,13 @@ export default class MathsController extends Controller {
                 value: result,
             });
         } catch (error) {
-            this.HttpContext.response.unprocessable(error.message);
+            this.HttpContext.response.JSON({
+                op: operation,
+                x: x !== undefined ? x : null,
+                y: y !== undefined ? y : null,
+                n: n !== undefined ? n : null,
+                error: error.message,
+            });
         }
     }
 
