@@ -12,13 +12,16 @@ export default class MathsController extends Controller {
 
         let operation = param['op'] && param['op'].trim() !== '' ? param['op'] : '+';
 
-        let missingParams = this.checkMissingParams(operation, x || X, y || Y, n);
+        let xValue = x !== undefined ? x : X;
+        let yValue = y !== undefined ? y : Y;
+
+        let missingParams = this.checkMissingParams(operation, xValue, yValue, n);
         if (missingParams.length > 0) {
             return this.HttpContext.response.badRequest(`Missing required parameters: ${missingParams.join(', ')}`);
         }
 
         try {
-            const result = await this.handleMathOperations(operation, x || X, y || Y, n);
+            const result = await this.handleMathOperations(operation, xValue, yValue, n);
 
             const response = { op: operation, value: result };
             if (X !== undefined) response.X = X;
