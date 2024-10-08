@@ -11,18 +11,33 @@ document.getElementById('start-test-btn').addEventListener('click', async functi
         { op: '!', n: 5 },
         { op: 'p', n: 113 },
         { op: 'np', n: 30 },
+        { op: '%', x: 50, y: 7 },
         { op: '', x: -5 },
     ];
 
     let allPassed = true;
 
     for (const test of tests) {
-        let result = await API_Get(test.op, test);
+        let result;
+        try {
+            result = await API_Get(test.op, test);
+        } catch (error) {
+            resultList.innerHTML += `<li>Erreur: ${JSON.stringify(test)} - ${error.message}</li>`;
+            allPassed = false;
+            continue;
+        }
+
         if (result && result.error) {
             resultList.innerHTML += `<li>Erreur: ${JSON.stringify(test)} - ${result.error}</li>`;
             allPassed = false;
         } else {
-            resultList.innerHTML += `<li>OK ---> ${JSON.stringify(test)}: value=${result.value}</li>`;
+            const response = { op: test.op };
+            if (test.x !== undefined && test.x !== null) response.x = test.x;
+            if (test.y !== undefined && test.y !== null) response.y = test.y;
+            if (test.n !== undefined && test.n !== null) response.n = test.n;
+            if (result.value !== undefined) response.value = result.value;
+
+            resultList.innerHTML += `<li>OK ---> ${JSON.stringify(response)}</li>`;
         }
     }
 
