@@ -1,14 +1,18 @@
-class Maths_API {
-    static API_URL() { return "https://carnation-truthful-pangolin.glitch.me/api/maths"; }
+const API_URL = "https://carnation-truthful-pangolin.glitch.me/api/contacts";
+let currentHttpError = "";
 
-    static async Get(op, params) {
-        let urlParams = new URLSearchParams({ op, ...params }).toString();
-        return new Promise(resolve => {
-            $.ajax({
-                url: this.API_URL() + "?" + urlParams,
-                success: result => { resolve(result); },
-                error: (xhr) => { console.log(xhr); resolve(null); }
-            });
-        });
-    }
+function API_getcurrentHttpError () {
+    return currentHttpError; 
 }
+
+function API_Get(op, params) {
+    let urlParams = new URLSearchParams({ op, ...params }).toString();
+    return new Promise(resolve => {
+        $.ajax({
+            url: API_URL + "?" + urlParams,
+            success: result => { currentHttpError = ""; resolve(result); },
+            error: (xhr) => { console.log(xhr); resolve(null); }
+        });
+    });
+}
+

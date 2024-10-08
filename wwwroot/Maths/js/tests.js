@@ -17,7 +17,7 @@ document.getElementById('start-test-btn').addEventListener('click', async functi
     let allPassed = true;
 
     for (const test of tests) {
-        let result = await Maths_API.Get(test.op, test);
+        let result = await API_Get(test.op, test);
         if (result && result.error) {
             resultList.innerHTML += `<li>Erreur: ${JSON.stringify(test)} - ${result.error}</li>`;
             allPassed = false;
