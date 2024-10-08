@@ -1,3 +1,5 @@
+import Controller from './Controller.js';
+
 export default class MathsController extends Controller {
     async get() {
         let param = this.HttpContext.path.params;
