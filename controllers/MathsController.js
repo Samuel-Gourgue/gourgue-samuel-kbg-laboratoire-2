@@ -17,7 +17,7 @@ export default class MathsController extends Controller {
                 x: param['x'] || param['X'],
                 y: param['y'] || param['Y'],
                 n: param['n'] || param['N'],
-                error: `Missing required parameters: ${missingParams.join(', ')}`
+                error: `"${missingParams.join(', ')}" parameter is missing`
             };
             return this.HttpContext.response.JSON(errorResponse);
         }
