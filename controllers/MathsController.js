@@ -56,19 +56,23 @@ export default class MathsController extends Controller {
     }
 
     async handleMathOperations(op, x, y, n) {
+        x = (x !== undefined) ? parseFloat(x) : undefined;
+        y = (y !== undefined) ? parseFloat(y) : undefined;
+        n = (n !== undefined) ? parseFloat(n) : undefined;
+    
         if (['+', '-', '*', '/', '%'].includes(op)) {
-            if (x !== undefined) {
-                x = parseFloat(x);
-                if (isNaN(x)) throw new Error("'x' parameter is not a number");
-            } else {
-                throw new Error("'x' parameter is missing");
+            if (x === undefined) {
+                return { error: "'x' parameter is missing" };
+            }
+            if (isNaN(x)) {
+                return { error: "'x' parameter is not a number" };
             }
     
-            if (y !== undefined) {
-                y = parseFloat(y);
-                if (isNaN(y)) throw new Error("'y' parameter is not a number");
-            } else {
-                throw new Error("'y' parameter is missing");
+            if (y === undefined) {
+                return { error: "'y' parameter is missing" };
+            }
+            if (isNaN(y)) {
+                return { error: "'y' parameter is not a number" };
             }
         }
     
