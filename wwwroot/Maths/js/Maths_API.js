@@ -1,7 +1,7 @@
-const API_URL = "https://carnation-truthful-pangolin.glitch.me/api/contacts";
+const API_URL = "https://carnation-truthful-pangolin.glitch.me/api/maths"; // Changer l'URL pour les mathématiques
 let currentHttpError = "";
 
-function API_getcurrentHttpError () {
+function API_getcurrentHttpError() {
     return currentHttpError; 
 }
 
@@ -10,9 +10,18 @@ function API_Get(op, params) {
     return new Promise(resolve => {
         $.ajax({
             url: API_URL + "?" + urlParams,
-            success: result => { currentHttpError = ""; resolve(result); },
-            error: (xhr) => { console.log(xhr); resolve(null); }
+            method: 'GET',
+            success: result => {
+                currentHttpError = ""; 
+                resolve(result);
+            },
+            error: (xhr) => {
+                console.error(xhr);
+                currentHttpError = xhr.responseText;
+                resolve(null);
+            }
         });
     });
 }
+
 
