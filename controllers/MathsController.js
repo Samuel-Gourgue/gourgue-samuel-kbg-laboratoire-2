@@ -13,7 +13,10 @@ export default class MathsController extends Controller {
 
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
+            
             const response = { op: operation, value: result };
+            if (x !== undefined) response.x = x;
+            if (y !== undefined) response.y = y;
             if (n !== undefined) response.n = n;
 
             this.HttpContext.response.JSON(response);
