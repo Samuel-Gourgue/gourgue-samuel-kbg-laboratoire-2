@@ -3,12 +3,12 @@ import Controller from './Controller.js';
 export default class MathsController extends Controller {
     async get() {
         const { op, x, y, n } = this.HttpContext.path.params;
-        
+
         let operation = op && op.trim() !== '' ? op : '+';
 
         let missingParams = this.checkMissingParams(operation, x, y, n);
         if (missingParams.length > 0) {
-            return this.HttpContext.response.status(400).json({
+            return this.sendResponse(400, {
                 error: `Missing required parameters: ${missingParams.join(', ')}`
             });
         }
@@ -16,7 +16,7 @@ export default class MathsController extends Controller {
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
             if (result !== undefined) {
-                this.HttpContext.response.JSON({
+                this.sendResponse(200, {
                     op: operation,
                     x: x !== undefined ? x : null,
                     y: y !== undefined ? y : null,
@@ -24,12 +24,12 @@ export default class MathsController extends Controller {
                     value: result,
                 });
             } else {
-                this.HttpContext.response.status(422).json({
+                this.sendResponse(422, {
                     error: 'Invalid operation or parameters.'
                 });
             }
         } catch (error) {
-            this.HttpContext.response.status(422).json({
+            this.sendResponse(422, {
                 error: error.message,
             });
         }
@@ -86,5 +86,10 @@ export default class MathsController extends Controller {
             default:
                 throw new Error(`Unsupported operation: ${op}`);
         }
+    }
+
+    sendResponse(statusCode, jsonData) {
+        this.HttpContext.response.writeHead(statusCode, { 'Content-Type': 'application/json' });
+        this.HttpContext.response.end(JSON.stringify(jsonData));
     }
 }
