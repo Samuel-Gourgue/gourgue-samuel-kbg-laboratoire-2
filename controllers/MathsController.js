@@ -8,7 +8,7 @@ export default class MathsController extends Controller {
 
         let x = param['x'] || param['X'];
         let y = param['y'] || param['Y'];
-        let n = param['n'] !== undefined ? param['n'] : param['N'];
+        let n = param['n'] || param['N'];
 
         let missingParams = this.checkMissingParams(operation, x, y, n);
         if (missingParams.length > 0) {
@@ -16,6 +16,7 @@ export default class MathsController extends Controller {
                 op: operation,
                 x: param['x'] || param['X'],
                 y: param['y'] || param['Y'],
+                n: param['n'] || param['N'],
                 error: `Missing required parameters: ${missingParams.join(', ')}`
             };
             return this.HttpContext.response.JSON(errorResponse);
