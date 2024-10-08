@@ -75,9 +75,17 @@ export default class MathsController extends Controller {
                 }
                 return x / y;
             case 'p':
-                return n % 2 === 0;
+                return this.isPrime(n);
             default:
                 throw new Error(`Unsupported operation: ${op}`);
         }
+    }
+
+    isPrime(num) {
+        if (num <= 1) return false;
+        for (let i = 2; i <= Math.sqrt(num); i++) {
+            if (num % i === 0) return false;
+        }
+        return true;
     }
 }
