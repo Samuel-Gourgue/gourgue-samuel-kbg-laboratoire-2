@@ -13,6 +13,7 @@ export default class MathsController extends Controller {
 
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
+            
             const response = { op: operation, value: result };
             if (x !== undefined) response.x = x;
             if (y !== undefined) response.y = y;
@@ -39,9 +40,11 @@ export default class MathsController extends Controller {
             case '-':
             case '*':
             case '/':
-            case 'np':
                 if (x === undefined) missing.push('x');
                 if (y === undefined) missing.push('y');
+                break;
+            case 'np':
+                if (n === undefined) missing.push('n');
                 break;
             case 'p':
                 if (n === undefined) missing.push('n');
