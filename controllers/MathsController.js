@@ -2,35 +2,33 @@ import Controller from './Controller.js';
 
 export default class MathsController extends Controller {
     async get() {
-        const { op, X, Y, n } = this.HttpContext.path.params;
-        
-        const x = X !== undefined ? X : undefined;
-        const y = Y !== undefined ? Y : undefined;
+        const { op, x, y, n } = this.HttpContext.path.params;
 
         let operation = op && op.trim() !== '' ? op : '+';
 
         let missingParams = this.checkMissingParams(operation, x, y, n);
         if (missingParams.length > 0) {
-            const errorResponse = { op: operation, X: x, Y: y, error: `Missing required parameters: ${missingParams.join(', ')}` };
-            return this.HttpContext.response.JSON(errorResponse);
+            return this.HttpContext.response.badRequest(`Missing required parameters: ${missingParams.join(', ')}`);
         }
 
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
 
             const response = { op: operation, value: result };
-            if (x !== undefined) response.X = x;
-            if (y !== undefined) response.Y = y;
+            if (x !== undefined) response.x = x;
+            if (y !== undefined) response.y = y;
             if (n !== undefined) response.n = n;
 
             this.HttpContext.response.JSON(response);
         } catch (error) {
             const errorResponse = {
                 op: operation,
-                X: x,
-                Y: y,
                 error: error.message,
             };
+            if (x !== undefined) errorResponse.x = x;
+            if (y !== undefined) errorResponse.y = y;
+            if (n !== undefined) errorResponse.n = n;
+
             this.HttpContext.response.JSON(errorResponse);
         }
     }
@@ -59,19 +57,24 @@ export default class MathsController extends Controller {
 
     async handleMathOperations(op, x, y, n) {
         if (['+', '-', '*', '/', '%'].includes(op)) {
-            if (x === undefined) throw new Error("'x' parameter is missing");
-            x = parseFloat(x);
-            if (isNaN(x)) throw new Error("'x' parameter is not a number");
-
-            if (y === undefined) throw new Error("'y' parameter is missing");
-            y = parseFloat(y);
-            if (isNaN(y)) throw new Error("'y' parameter is not a number");
+            if (x !== undefined) {
+                x = parseFloat(x);
+                if (isNaN(x)) throw new Error("'x' parameter is not a number");
+            } else {
+                throw new Error("'x' parameter is missing");
+            }
+    
+            if (y !== undefined) {
+                y = parseFloat(y);
+                if (isNaN(y)) throw new Error("'y' parameter is not a number");
+            } else {
+                throw new Error("'y' parameter is missing");
+            }
         }
-
+    
         if (n !== undefined) {
             n = parseFloat(n);
             if (isNaN(n)) throw new Error("'n' parameter is not a number");
-            if (!Number.isInteger(n) || n <= 0) throw new Error("'n' parameter must be an integer > 0");
         } else if (op === '!' || op === 'p' || op === 'np') {
             throw new Error("'n' parameter is missing");
         }
@@ -105,7 +108,8 @@ export default class MathsController extends Controller {
     }
 
     isPrime(num) {
-        if (!Number.isInteger(n) || num <= 0) throw new Error("'n' parameter must be an integer > 0");
+        if (num <= 0) throw new Error("'n' parameter must be an integer > 0");
+        if (!Number.isInteger(num)) throw new Error("'n' parameter must be an integer > 0");
         if (num <= 1) return false;
         for (let i = 2; i <= Math.sqrt(num); i++) {
             if (num % i === 0) return false;
@@ -129,7 +133,8 @@ export default class MathsController extends Controller {
     }
 
     factorial(n) {
-        if (!Number.isInteger(n) || n <= 0) throw new Error("'n' parameter must be an integer > 0");
+        if (n <= 0) throw new Error("'n' parameter must be an integer > 0");
+        if (!Number.isInteger(n)) throw new Error("'n' parameter must be an integer > 0");
         if (n === 0) return 1;
 
         let result = 1;
