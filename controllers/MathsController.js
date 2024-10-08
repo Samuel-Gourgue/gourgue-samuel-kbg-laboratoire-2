@@ -45,9 +45,10 @@ export default class MathsController extends Controller {
                 if (y === undefined) missing.push('y');
                 break;
             case 'np':
+            case 'p':
                 if (n === undefined) missing.push('n');
                 break;
-            case 'p':
+            case '!':
                 if (n === undefined) missing.push('n');
                 break;
             default:
@@ -95,6 +96,8 @@ export default class MathsController extends Controller {
                 return this.isPrime(n);
             case 'np':
                 return this.getNthPrime(n);
+            case '!':
+                return this.factorial(n);
             default:
                 throw new Error(`Unsupported operation: ${op}`);
         }
@@ -121,5 +124,15 @@ export default class MathsController extends Controller {
             }
         }
         return num;
+    }
+
+    factorial(n) {
+        if (n < 0) throw new Error("'n' must be a non-negative integer");
+        if (n === 0) return 1;
+        let result = 1;
+        for (let i = 1; i <= n; i++) {
+            result *= i;
+        }
+        return result;
     }
 }
