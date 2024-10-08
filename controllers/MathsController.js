@@ -2,32 +2,28 @@ import Controller from './Controller.js';
 
 export default class MathsController extends Controller {
     async get() {
-        const { op, x, y, n } = this.HttpContext.path.params;
+        let param = this.HttpContext.path.params;
 
-        let operation = op && op.trim() !== '' ? op : '+';
+        let operation = param['op'] && param['op'].trim() !== '' ? param['op'] : '+';
 
-        let missingParams = this.checkMissingParams(operation, x, y, n);
+        let missingParams = this.checkMissingParams(operation, param['x'], param['y'], param['n']);
         if (missingParams.length > 0) {
             return this.HttpContext.response.badRequest(`Missing required parameters: ${missingParams.join(', ')}`);
         }
 
         try {
-            const result = await this.handleMathOperations(operation, x, y, n);
-
+            const result = await this.handleMathOperations(operation, param['x'], param['y'], param['n']);
             const response = { op: operation, value: result };
-            if (x !== undefined) response.x = x;
-            if (y !== undefined) response.y = y;
-            if (n !== undefined) response.n = n;
+            if (param['x'] !== undefined) response.x = param['x'];
+            if (param['y'] !== undefined) response.y = param['y'];
+            if (param['n'] !== undefined) response.n = param['n'];
 
             this.HttpContext.response.JSON(response);
         } catch (error) {
-            const errorResponse = {
-                op: operation,
-                error: error.message,
-            };
-            if (x !== undefined) errorResponse.x = x;
-            if (y !== undefined) errorResponse.y = y;
-            if (n !== undefined) errorResponse.n = n;
+            const errorResponse = { op: operation, error: error.message };
+            if (param['x'] !== undefined) errorResponse.x = param['x'];
+            if (param['y'] !== undefined) errorResponse.y = param['y'];
+            if (param['n'] !== undefined) errorResponse.n = param['n'];
 
             this.HttpContext.response.JSON(errorResponse);
         }
@@ -57,14 +53,14 @@ export default class MathsController extends Controller {
 
     async handleMathOperations(op, x, y, n) {
         if (['+', '-', '*', '/', '%'].includes(op)) {
-            if (x !== undefined || x == "") {
+            if (x !== undefined || x == '') {
                 x = parseFloat(x);
                 if (isNaN(x)) throw new Error("'x' parameter is not a number");
             } else {
                 throw new Error("'x' parameter is missing");
             }
     
-            if (y !== undefined || y == "") {
+            if (y !== undefined || y == '') {
                 y = parseFloat(y);
                 if (isNaN(y)) throw new Error("'y' parameter is not a number");
             } else {
@@ -88,7 +84,7 @@ export default class MathsController extends Controller {
                 return x * y;
             case '/':
                 if (y === 0) {
-                    if (x === 0){
+                    if (x === 0) {
                         return x / y;
                     }
                     throw new Error("Infinity");
