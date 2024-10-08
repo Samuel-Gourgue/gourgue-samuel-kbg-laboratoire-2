@@ -13,7 +13,6 @@ export default class MathsController extends Controller {
 
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
-            
             const response = { op: operation, value: result };
             if (x !== undefined) response.x = x;
             if (y !== undefined) response.y = y;
@@ -40,6 +39,7 @@ export default class MathsController extends Controller {
             case '-':
             case '*':
             case '/':
+            case 'np':
                 if (x === undefined) missing.push('x');
                 if (y === undefined) missing.push('y');
                 break;
@@ -84,6 +84,8 @@ export default class MathsController extends Controller {
                 return x / y;
             case 'p':
                 return this.isPrime(n);
+            case 'np':
+                return this.getNthPrime(n);
             default:
                 throw new Error(`Unsupported operation: ${op}`);
         }
@@ -95,5 +97,20 @@ export default class MathsController extends Controller {
             if (num % i === 0) return false;
         }
         return true;
+    }
+
+    getNthPrime(n) {
+        if (n < 1) throw new Error("'n' must be a positive integer");
+        
+        let count = 0;
+        let num = 1;
+
+        while (count < n) {
+            num++;
+            if (this.isPrime(num)) {
+                count++;
+            }
+        }
+        return num;
     }
 }
