@@ -13,27 +13,24 @@ export default class MathsController extends Controller {
 
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
-            if (result.error) {
-                const errorResponse = { op: operation, X: x, Y: y, error: result.error };
-                return this.HttpContext.response.JSON(errorResponse);
-            }
-            
+
             const response = { op: operation, value: result };
-            if (x !== undefined) response.X = x; 
-            if (y !== undefined) response.Y = y; 
+            if (x !== undefined) response.x = x;
+            if (y !== undefined) response.y = y;
             if (n !== undefined) response.n = n;
-        
+
             this.HttpContext.response.JSON(response);
         } catch (error) {
             const errorResponse = {
                 op: operation,
-                X: x,
-                Y: y,
-                n: n,
                 error: error.message,
             };
+            if (x !== undefined) errorResponse.x = x;
+            if (y !== undefined) errorResponse.y = y;
+            if (n !== undefined) errorResponse.n = n;
+
             this.HttpContext.response.JSON(errorResponse);
-        }        
+        }
     }
 
     checkMissingParams(op, x, y, n) {
@@ -59,23 +56,19 @@ export default class MathsController extends Controller {
     }
 
     async handleMathOperations(op, x, y, n) {
-        x = (x !== undefined) ? parseFloat(x) : undefined;
-        y = (y !== undefined) ? parseFloat(y) : undefined;
-        n = (n !== undefined) ? parseFloat(n) : undefined;
-    
         if (['+', '-', '*', '/', '%'].includes(op)) {
-            if (x === undefined) {
-                return { error: "'x' parameter is missing" };
-            }
-            if (isNaN(x)) {
-                return { error: "'x' parameter is not a number" };
+            if (x !== undefined) {
+                x = parseFloat(x);
+                if (isNaN(x)) throw new Error("'x' parameter is not a number");
+            } else {
+                throw new Error("'x' parameter is missing");
             }
     
-            if (y === undefined) {
-                return { error: "'y' parameter is missing" };
-            }
-            if (isNaN(y)) {
-                return { error: "'y' parameter is not a number" };
+            if (y !== undefined) {
+                y = parseFloat(y);
+                if (isNaN(y)) throw new Error("'y' parameter is not a number");
+            } else {
+                throw new Error("'y' parameter is missing");
             }
         }
     
