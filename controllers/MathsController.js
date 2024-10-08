@@ -2,9 +2,13 @@ import Controller from './Controller.js';
 
 export default class MathsController extends Controller {
     async get() {
-        const { op, x, y, n } = this.HttpContext.path.params;
+        const { op, x, y, n, ...extraParams } = this.HttpContext.path.params;
 
         let operation = op && op.trim() !== '' ? op : '+';
+
+        if (Object.keys(extraParams).length > 0) {
+            return this.HttpContext.response.badRequest('Too many parameters');
+        }
 
         let missingParams = this.checkMissingParams(operation, x, y, n);
         if (missingParams.length > 0) {
@@ -13,7 +17,7 @@ export default class MathsController extends Controller {
 
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
-            
+
             const response = { op: operation, value: result };
             if (x !== undefined) response.x = x;
             if (y !== undefined) response.y = y;
@@ -41,18 +45,16 @@ export default class MathsController extends Controller {
             case '*':
             case '/':
             case '%':
-                if (x === undefined) missing.push('x');
-                if (y === undefined) missing.push('y');
+                if (x === undefined) missing.push("'x'");
+                if (y === undefined) missing.push("'y'");
                 break;
             case 'np':
             case 'p':
-                if (n === undefined) missing.push('n');
-                break;
             case '!':
-                if (n === undefined) missing.push('n');
+                if (n === undefined) missing.push("'n'");
                 break;
             default:
-                missing.push('op');
+                missing.push("'op'");
         }
         return missing;
     }
@@ -62,21 +64,27 @@ export default class MathsController extends Controller {
             if (x !== undefined) {
                 x = parseFloat(x);
                 if (isNaN(x)) throw new Error("'x' parameter is not a number");
+            } else {
+                throw new Error("'x' parameter is missing");
             }
+
             if (y !== undefined) {
                 y = parseFloat(y);
                 if (isNaN(y)) throw new Error("'y' parameter is not a number");
+            } else {
+                throw new Error("'y' parameter is missing");
             }
         }
 
         if (n !== undefined) {
             n = parseInt(n);
-            if (isNaN(n)) throw new Error("'n' parameter is not an integer");
+            if (isNaN(n)) throw new Error("'n' parameter is not a number");
+        } else if (op === '!' || op === 'p' || op === 'np') {
+            throw new Error("'n' parameter is missing");
         }
 
         switch (op) {
             case '+':
-            case ' ':
                 return x + y;
             case '-':
                 return x - y;
@@ -84,13 +92,13 @@ export default class MathsController extends Controller {
                 return x * y;
             case '/':
                 if (y === 0) {
-                    throw new Error("Division by zero is not allowed");
+                    throw new Error("Infinity");
+                }
+                if (x === 0 && y === 0){
+                    return x / y;
                 }
                 return x / y;
             case '%':
-                if (y === 0) {
-                    throw new Error("Division by zero is not allowed");
-                }
                 return x % y;
             case 'p':
                 return this.isPrime(n);
@@ -104,6 +112,7 @@ export default class MathsController extends Controller {
     }
 
     isPrime(num) {
+        if (n < 0) throw new Error("'n' parameter must be an integer > 0");
         if (num <= 1) return false;
         for (let i = 2; i <= Math.sqrt(num); i++) {
             if (num % i === 0) return false;
@@ -113,7 +122,7 @@ export default class MathsController extends Controller {
 
     getNthPrime(n) {
         if (n < 1) throw new Error("'n' must be a positive integer");
-        
+
         let count = 0;
         let num = 1;
 
@@ -127,8 +136,9 @@ export default class MathsController extends Controller {
     }
 
     factorial(n) {
-        if (n < 0) throw new Error("'n' must be a non-negative integer");
+        if (n < 0) throw new Error("'n' parameter must be an integer > 0");
         if (n === 0) return 1;
+
         let result = 1;
         for (let i = 1; i <= n; i++) {
             result *= i;
