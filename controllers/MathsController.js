@@ -63,7 +63,7 @@ export default class MathsController extends Controller {
             } else {
                 throw new Error("'x' parameter is missing");
             }
-
+    
             if (y !== undefined) {
                 y = parseFloat(y);
                 if (isNaN(y)) throw new Error("'y' parameter is not a number");
@@ -71,9 +71,9 @@ export default class MathsController extends Controller {
                 throw new Error("'y' parameter is missing");
             }
         }
-
+    
         if (n !== undefined) {
-            n = parseInt(n);
+            n = parseFloat(n);
             if (isNaN(n)) throw new Error("'n' parameter is not a number");
         } else if (op === '!' || op === 'p' || op === 'np') {
             throw new Error("'n' parameter is missing");
