@@ -40,6 +40,7 @@ export default class MathsController extends Controller {
             case '-':
             case '*':
             case '/':
+            case '%':
                 if (x === undefined) missing.push('x');
                 if (y === undefined) missing.push('y');
                 break;
@@ -56,7 +57,7 @@ export default class MathsController extends Controller {
     }
 
     async handleMathOperations(op, x, y, n) {
-        if (['+', '-', '*', '/'].includes(op)) {
+        if (['+', '-', '*', '/', '%'].includes(op)) {
             if (x !== undefined) {
                 x = parseFloat(x);
                 if (isNaN(x)) throw new Error("'x' parameter is not a number");
@@ -85,6 +86,11 @@ export default class MathsController extends Controller {
                     throw new Error("Division by zero is not allowed");
                 }
                 return x / y;
+            case '%':
+                if (y === 0) {
+                    throw new Error("Division by zero is not allowed");
+                }
+                return x % y;
             case 'p':
                 return this.isPrime(n);
             case 'np':
