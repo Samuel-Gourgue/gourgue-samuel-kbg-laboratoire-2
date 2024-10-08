@@ -57,14 +57,14 @@ export default class MathsController extends Controller {
 
     async handleMathOperations(op, x, y, n) {
         if (['+', '-', '*', '/', '%'].includes(op)) {
-            if (x !== undefined) {
+            if (this.HttpContext.params["x"] == '' || x !== undefined) {
                 x = parseFloat(x);
                 if (isNaN(x)) throw new Error("'x' parameter is not a number");
             } else {
                 throw new Error("'x' parameter is missing");
             }
     
-            if (y !== undefined) {
+            if (this.HttpContext.params["y"] == '' || y !== undefined) {
                 y = parseFloat(y);
                 if (isNaN(y)) throw new Error("'y' parameter is not a number");
             } else {
