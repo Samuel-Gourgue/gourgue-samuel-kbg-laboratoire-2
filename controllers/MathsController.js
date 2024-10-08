@@ -108,7 +108,7 @@ export default class MathsController extends Controller {
     }
 
     isPrime(num) {
-        if (num < 0) throw new Error("'n' parameter must be an integer > 0");
+        if (num <= 0) throw new Error("'n' parameter must be an integer > 0");
         if (num <= 1) return false;
         for (let i = 2; i <= Math.sqrt(num); i++) {
             if (num % i === 0) return false;
@@ -132,7 +132,7 @@ export default class MathsController extends Controller {
     }
 
     factorial(n) {
-        if (n < 0) throw new Error("'n' parameter must be an integer > 0");
+        if (n <= 0) throw new Error("'n' parameter must be an integer > 0");
         if (n === 0) return 1;
 
         let result = 1;
