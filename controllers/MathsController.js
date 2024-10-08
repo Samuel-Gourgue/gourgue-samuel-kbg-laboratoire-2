@@ -48,8 +48,8 @@ export default class MathsController extends Controller {
             case '*':
             case '/':
             case '%':
-                if (x === undefined || x === null || x === '') missing.push("'x'");
-                if (y === undefined || y === null || y === '') missing.push("'y'");
+                if (x === undefined || x === null || x === '' || param['X']) missing.push("'x'");
+                if (y === undefined || y === null || y === '' || param['Y']) missing.push("'y'");
                 break;
             case 'np':
             case 'p':
