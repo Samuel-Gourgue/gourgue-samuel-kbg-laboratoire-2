@@ -35,7 +35,12 @@ document.getElementById('start-test-btn').addEventListener('click', async functi
             if (test.x !== undefined && test.x !== null) response.x = test.x;
             if (test.y !== undefined && test.y !== null) response.y = test.y;
             if (test.n !== undefined && test.n !== null) response.n = test.n;
-            if (result.value !== undefined) response.value = result.value;
+
+            if (result.value !== undefined) {
+                response.value = result.value;
+            } else if (result.error) {
+                response.error = result.error;
+            }
 
             resultList.innerHTML += `<li>OK ---> ${JSON.stringify(response)}</li>`;
         }
