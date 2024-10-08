@@ -14,18 +14,16 @@ export default class MathsController extends Controller {
         try {
             const result = await this.handleMathOperations(operation, x, y, n);
             if (result !== undefined) {
-                this.HttpContext.response.writeHead(200, { 'Content-Type': 'application/json' });
-                this.HttpContext.response.end(JSON.stringify({
+                this.HttpContext.response.json({
                     n,
                     op: operation,
                     value: result,
-                }));
+                });
             }
         } catch (error) {
-            this.HttpContext.response.writeHead(400, { 'Content-Type': 'application/json' });
-            this.HttpContext.response.end(JSON.stringify({
+            this.HttpContext.response.status(400).send({
                 error: error.message,
-            }));
+            });
         }
     }
     
