@@ -2,13 +2,9 @@ import Controller from './Controller.js';
 
 export default class MathsController extends Controller {
     async get() {
-        const { op, x, y, n, ...extraParams } = this.HttpContext.path.params;
+        const { op, x, y, n } = this.HttpContext.path.params;
 
         let operation = op && op.trim() !== '' ? op : '+';
-
-        if (Object.keys(extraParams).length > 0) {
-            return this.HttpContext.response.badRequest('Too many parameters');
-        }
 
         let missingParams = this.checkMissingParams(operation, x, y, n);
         if (missingParams.length > 0) {
@@ -92,10 +88,10 @@ export default class MathsController extends Controller {
                 return x * y;
             case '/':
                 if (y === 0) {
+                    if (x === 0){
+                        return x / y;
+                    }
                     throw new Error("Infinity");
-                }
-                if (x === 0 && y === 0){
-                    return x / y;
                 }
                 return x / y;
             case '%':
@@ -112,7 +108,7 @@ export default class MathsController extends Controller {
     }
 
     isPrime(num) {
-        if (n < 0) throw new Error("'n' parameter must be an integer > 0");
+        if (num < 0) throw new Error("'n' parameter must be an integer > 0");
         if (num <= 1) return false;
         for (let i = 2; i <= Math.sqrt(num); i++) {
             if (num % i === 0) return false;
