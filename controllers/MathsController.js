@@ -14,21 +14,27 @@ export default class MathsController extends Controller {
         if (missingParams.length > 0) {
             const errorResponse = {
                 op: operation,
-                x: param['x'] || param['X'],
-                y: param['y'] || param['Y'],
-                n: param['n'] || param['N'],
+                x: param['x'],
+                y: param['y'],
+                n: param['n'],
+                X: param['X'],
+                Y: param['Y'],
+                N: param['N'],
                 error: `${missingParams.join(', ')} parameter is missing`
             };
             return this.HttpContext.response.JSON(errorResponse);
         }
 
         let extraParams = this.checkExtraParams(param, operation);
-        if (extraParams.length > 0) {
+        if (extraParams.length > 0 && missingParams.length === 0) {
             const errorResponse = {
                 op: operation,
-                x: param['x'] || param['X'],
-                y: param['y'] || param['Y'],
-                n: param['n'] || param['N'],
+                x: param['x'],
+                y: param['y'],
+                n: param['n'],
+                X: param['X'],
+                Y: param['Y'],
+                N: param['N'],
                 error: `Too many parameters: ${extraParams.join(', ')}`
             };
             return this.HttpContext.response.JSON(errorResponse);
