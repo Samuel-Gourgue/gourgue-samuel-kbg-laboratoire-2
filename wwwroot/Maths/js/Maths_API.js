@@ -1,4 +1,4 @@
-const API_URL = "https://carnation-truthful-pangolin.glitch.me/api/maths";
+const API_URL = "https://carnation-truthful-pangolin.glitch.me/api/maths"; 
 let currentHttpError = "";
 
 function API_getcurrentHttpError() {
@@ -71,7 +71,9 @@ return {"op":"np","n":integer,"value": nth prime number}
     const helpWindow = window.open("", "_blank");
     helpWindow.document.write(helpContent);
     helpWindow.document.close();
+    
+    const helpURL = `${API_URL}?`;
+    window.location.href = helpURL;
 }
 
-// Attach event listener for help button
 document.getElementById('help-btn').addEventListener('click', showHelpDocumentation);
