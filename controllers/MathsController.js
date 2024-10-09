@@ -4,7 +4,7 @@ export default class MathsController extends Controller {
     async get() {
         let param = this.HttpContext.path.params;
 
-        let operation = param['op'] && param['op'].trim() !== '' ? param['op'] : '+';
+        let operation = param['op'] && param['op'].trim() !== '' ? param['op'] : null;
 
         let x = param['x'] || param['X'];
         let y = param['y'] || param['Y'];
@@ -54,22 +54,26 @@ export default class MathsController extends Controller {
 
     checkMissingParams(op, x, y, n) {
         let missing = [];
-        switch (op) {
-            case '+':
-            case '-':
-            case '*':
-            case '/':
-            case '%':
-                if (x === undefined || x === null || x === '') missing.push("'x'");
-                if (y === undefined || y === null || y === '') missing.push("'y'");
-                break;
-            case 'np':
-            case 'p':
-            case '!':
-                if (n === undefined || n === null || n === '') missing.push("'n'");
-                break;
-            default:
-                missing.push("'op'");
+        if (!op) {
+            missing.push("'op'");
+        } else {
+            switch (op) {
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                case '%':
+                    if (x === undefined || x === null || x === '') missing.push("'x'");
+                    if (y === undefined || y === null || y === '') missing.push("'y'");
+                    break;
+                case 'np':
+                case 'p':
+                case '!':
+                    if (n === undefined || n === null || n === '') missing.push("'n'");
+                    break;
+                default:
+                    missing.push("'op'");
+            }
         }
         return missing;
     }
