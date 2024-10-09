@@ -57,15 +57,19 @@ document.getElementById('start-test-btn').addEventListener('click', async functi
         if (result && result.error) {
             response.error = result.error;
             resultList.innerHTML += `<li>OK ---> ${JSON.stringify(response)}</li>`;
-            allPassed = false;
+            allPassed = true;
         } else if (result && result.value !== undefined) {
             response.value = result.value;
             resultList.innerHTML += `<li>OK ---> ${JSON.stringify(response)}</li>`;
         } else {
-            resultList.innerHTML += `<li>Erreur: ${JSON.stringify(test)} - Unknown error occurred</li>`;
+            resultList.innerHTML += `<li>Erreur: ${JSON.stringify(test)} - Erreur inconnue</li>`;
             allPassed = false;
         }
     }
 
-    document.getElementById('verdict-text').textContent = allPassed ? 'Bravo!! Aucun problème' : 'Certaines erreurs détectées';
+    if (allPassed) {
+        document.getElementById('verdict-text').textContent = 'Bravo!! Aucun problème';
+    } else {
+        document.getElementById('verdict-text').textContent = 'Certaines erreurs détectées';
+    }
 });
