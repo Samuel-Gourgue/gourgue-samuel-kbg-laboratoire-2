@@ -22,6 +22,18 @@ export default class MathsController extends Controller {
             return this.HttpContext.response.JSON(errorResponse);
         }
 
+        let extraParams = this.checkExtraParams(param, operation);
+        if (extraParams.length > 0) {
+            const errorResponse = {
+                op: operation,
+                x: param['x'] || param['X'],
+                y: param['y'] || param['Y'],
+                n: param['n'] || param['N'],
+                error: `Too many parameters: ${extraParams.join(', ')}`
+            };
+            return this.HttpContext.response.JSON(errorResponse);
+        }
+
         try {
             const result = await this.handleMathOperations(operation, param['x'], param['y'], param['n']);
             const response = { op: operation, value: result };
@@ -60,6 +72,17 @@ export default class MathsController extends Controller {
                 missing.push("'op'");
         }
         return missing;
+    }
+
+    checkExtraParams(params, op) {
+        const expectedParams = ['op'];
+        if (['+', '-', '*', '/', '%'].includes(op)) {
+            expectedParams.push('x', 'y');
+        } else if (['np', 'p', '!'].includes(op)) {
+            expectedParams.push('n');
+        }
+
+        return Object.keys(params).filter(param => !expectedParams.includes(param));
     }
 
     async handleMathOperations(op, x, y, n) {
