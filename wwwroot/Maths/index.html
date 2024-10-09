@@ -29,11 +29,52 @@
         <p id="verdict-text"></p>
     </div>
 
+    <div id="documentation" style="display: none; margin-top: 20px;">
+        <h2>GET : Maths endpoint</h2>
+        <p>List of possible query strings:</p>
+        <pre>
+? op = + & x = number & y = number
+return {"op":"+","x":number,"y":number,"value": x + y}
+
+? op = - & x = number & y = number
+return {"op":"-","x":number,"y":number,"value": x - y}
+
+? op = * & x = number & y = number
+return {"op":"*","x":number,"y":number,"value": x * y}
+
+? op = / & x = number & y = number
+return {"op":"/","x":number,"y":number,"value": x / y}
+
+? op = % & x = number & y = number
+return {"op":"%","x":number,"y":number,"value": x % y}
+
+? op = ! & n = integer
+return {"op":"!","n":integer,"value": n!}
+
+? op = p & n = integer
+return {"op":"p","n":integer,"value": true if n is a prime number}
+
+? op = np & n = integer
+return {"op":"np","n":integer,"value": nth prime number}
+        </pre>
+    </div>
+
     <script src="js/Maths_API.js"></script>
     <script src="js/tests.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <script>
+        document.getElementById('help-btn').addEventListener('click', function() {
+            const docSection = document.getElementById('documentation');
+            if (docSection.style.display === 'none') {
+                docSection.style.display = 'block';
+            } else {
+                docSection.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
