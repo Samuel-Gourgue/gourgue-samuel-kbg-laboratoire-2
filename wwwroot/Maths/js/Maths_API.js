@@ -67,13 +67,19 @@ return {"op":"np","n":integer,"value": nth prime number}
         </body>
         </html>
     `;
-    
-    const helpWindow = window.open("", "_blank");
-    helpWindow.document.write(helpContent);
-    helpWindow.document.close();
-    
+
     const helpURL = `${API_URL}?`;
-    window.location.href = helpURL;
+
+    fetch(helpURL)
+        .then(response => {
+            if (response.ok) {
+                document.write(helpContent);
+                document.close();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching API URL:', error);
+        });
 }
 
 document.getElementById('help-btn').addEventListener('click', showHelpDocumentation);
