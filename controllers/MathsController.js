@@ -10,33 +10,37 @@ export default class MathsController extends Controller {
         let y = param['y'] || param['Y'];
         let n = param['n'] || param['N'];
 
-        let missingParams = this.checkMissingParams(operation, x, y, n);
+        let missingParams = this.checkMissingParams(operation, param['x'], param['y'], param['n']);
         if (missingParams.length > 0) {
             const errorResponse = {
                 op: operation,
-                x: param['x'],
-                y: param['y'],
-                n: param['n'],
-                X: param['X'],
-                Y: param['Y'],
-                N: param['N'],
                 error: `${missingParams.join(', ')} parameter is missing`
             };
+
+            if (param['X'] !== undefined) errorResponse.X = param['X'];
+            if (param['Y'] !== undefined) errorResponse.Y = param['Y'];
+            if (param['x'] !== undefined) errorResponse.x = param['x'];
+            if (param['y'] !== undefined) errorResponse.y = param['y'];
+            if (param['n'] !== undefined) errorResponse.n = param['n'];
+            if (param['N'] !== undefined) errorResponse.N = param['N'];
+
             return this.HttpContext.response.JSON(errorResponse);
         }
 
         let extraParams = this.checkExtraParams(param, operation);
-        if (extraParams.length > 0 && missingParams.length === 0) {
+        if (extraParams.length > 0) {
             const errorResponse = {
                 op: operation,
-                x: param['x'],
-                y: param['y'],
-                n: param['n'],
-                X: param['X'],
-                Y: param['Y'],
-                N: param['N'],
                 error: `Too many parameters: ${extraParams.join(', ')}`
             };
+
+            if (param['X'] !== undefined) errorResponse.X = param['X'];
+            if (param['Y'] !== undefined) errorResponse.Y = param['Y'];
+            if (param['x'] !== undefined) errorResponse.x = param['x'];
+            if (param['y'] !== undefined) errorResponse.y = param['y'];
+            if (param['n'] !== undefined) errorResponse.n = param['n'];
+            if (param['N'] !== undefined) errorResponse.N = param['N'];
+
             return this.HttpContext.response.JSON(errorResponse);
         }
 
