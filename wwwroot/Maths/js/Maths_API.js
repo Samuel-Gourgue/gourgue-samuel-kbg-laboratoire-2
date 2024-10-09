@@ -1,4 +1,4 @@
-const API_URL = "https://carnation-truthful-pangolin.glitch.me/api/maths"; // Changer l'URL pour les mathématiques
+const API_URL = "https://carnation-truthful-pangolin.glitch.me/api/maths";
 let currentHttpError = "";
 
 function API_getcurrentHttpError() {
@@ -24,4 +24,54 @@ function API_Get(op, params) {
     });
 }
 
+function showHelpDocumentation() {
+    const helpContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Maths API Documentation</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+        </head>
+        <body>
+            <div class="container mt-5">
+                <h2>GET : Maths endpoint</h2>
+                <p>List of possible query strings:</p>
+                <pre>
+? op = + & x = number & y = number
+return {"op":"+","x":number,"y":number,"value": x + y}
 
+? op = - & x = number & y = number
+return {"op":"-","x":number,"y":number,"value": x - y}
+
+? op = * & x = number & y = number
+return {"op":"*","x":number,"y":number,"value": x * y}
+
+? op = / & x = number & y = number
+return {"op":"/","x":number,"y":number,"value": x / y}
+
+? op = % & x = number & y = number
+return {"op":"%","x":number,"y":number,"value": x % y}
+
+? op = ! & n = integer
+return {"op":"!","n":integer,"value": n!}
+
+? op = p & n = integer
+return {"op":"p","n":integer,"value": true if n is a prime number}
+
+? op = np & n = integer
+return {"op":"np","n":integer,"value": nth prime number}
+                </pre>
+            </div>
+        </body>
+        </html>
+    `;
+    
+    const helpWindow = window.open("", "_blank");
+    helpWindow.document.write(helpContent);
+    helpWindow.document.close();
+}
+
+// Attach event listener for help button
+document.getElementById('help-btn').addEventListener('click', showHelpDocumentation);
